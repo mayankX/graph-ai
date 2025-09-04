@@ -16,8 +16,14 @@ import {
 } from "@/components/ui/select"
 import { Button } from './ui/button';
 
-export type RenderFormat = 'svg' | 'png' | 'jpg' | 'xdot' | 'plain';
-const RENDER_FORMATS: RenderFormat[] = ['svg', 'png', 'jpg', 'xdot', 'plain'];
+export type RenderFormat = 'svg' | 'png' | 'jpg' | 'dot' | 'json';
+const RENDER_FORMATS: { value: RenderFormat; label: string }[] = [
+    { value: 'svg', label: 'SVG' },
+    { value: 'png', label: 'PNG' },
+    { value: 'jpg', label: 'JPG' },
+    { value: 'dot', label: 'DOT' },
+    { value: 'json', label: 'JSON' },
+];
 
 type GraphVisualizerProps = {
   dot: string;
@@ -50,10 +56,10 @@ export function GraphVisualizer({ dot, onSvgChange }: GraphVisualizerProps) {
           setOutput(svgString);
           onSvgChange(svgString);
         } else if (format === 'png' || format === 'jpg') {
+           // Correctly use the format for image element generation
            const imageElement = await graphviz.layout(dot, `${format}-image-element` as any, 'dot');
            setOutput(imageElement);
-           // Note: onSvgChange is not called for images.
-           onSvgChange('');
+           onSvgChange(''); // Not an SVG
         } else {
            const textOutput = await graphviz.layout(dot, format, 'dot');
            setOutput(textOutput);
@@ -121,7 +127,22 @@ export function GraphVisualizer({ dot, onSvgChange }: GraphVisualizerProps) {
         return <pre className='whitespace-pre-wrap text-sm text-foreground/80 p-4 w-full h-full overflow-auto'>{output}</pre>
     }
     if (output instanceof HTMLImageElement) {
-        return <img src={output.src} alt="graph visualization" className='max-w-full max-h-full object-contain' />;
+        return (
+            <TransformWrapper>
+            {({ zoomIn, zoomOut, resetTransform }) => (
+              <>
+                <div className="absolute top-2 right-2 z-10 flex gap-1">
+                  <Button variant="outline" size="icon" onClick={() => zoomIn()}><ZoomIn size={16}/></Button>
+                  <Button variant="outline" size="icon" onClick={() => zoomOut()}><ZoomOut size={16}/></Button>
+                  <Button variant="outline" size="icon" onClick={() => resetTransform()}><RotateCcw size={16}/></Button>
+                </div>
+                <TransformComponent wrapperClass="!w-full !h-full" contentClass="!w-full !h-full flex items-center justify-center">
+                    <img src={output.src} alt="graph visualization" className='max-w-full max-h-full object-contain' />
+                </TransformComponent>
+              </>
+            )}
+          </TransformWrapper>
+        )
     }
     return null;
   }
@@ -135,7 +156,7 @@ export function GraphVisualizer({ dot, onSvgChange }: GraphVisualizerProps) {
             <SelectValue placeholder="Select format" />
           </SelectTrigger>
           <SelectContent>
-            {RENDER_FORMATS.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+            {RENDER_FORMATS.map(f => <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>)}
           </SelectContent>
         </Select>
       </CardHeader>
