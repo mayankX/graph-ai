@@ -2,7 +2,7 @@
 
 GraphAI is an AI-powered Graphviz editor that allows you to render DOT code and intelligently refine graph aesthetics using generative AI. You can describe the visual changes you want in plain English, and the AI will enhance the graph's styles, colors, and fonts for you.
 
-![GraphAI Screenshot](https://storage.googleapis.com/stately-temp-files/242250d4-d50d-40e1-a083-0972e39f727c.png)
+![GraphAI Screenshot](src/public/app_overview.png)
 
 ## Features
 
