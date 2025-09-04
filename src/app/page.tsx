@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AppHeader } from '@/components/app-header';
 import { GraphEditor } from '@/components/graph-editor';
