@@ -8,40 +8,54 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/themes/prism-tomorrow.css'; 
 
 // Custom DOT language definition for Prism
-languages.dot = {
-  comment: {
-    pattern: /(^|\s)\/\*[\s\S]*?\*\/|\/\/.*/,
-    lookbehind: true,
-  },
-  'graph-type': {
-    pattern: /\b(digraph|graph|subgraph)\b/i,
-    alias: 'keyword',
-  },
-  'node-edge-attributes': {
-    pattern: /\b(node|edge|graph)\s*\[.*?\]/,
-    inside: {
-      'attribute-name': {
-        pattern: /\b\w+\b(?=\s*=)/,
-        alias: 'property',
-      },
-      'attribute-value': {
-        pattern: /"(?:\\.|[^"\\])*"|[\w.-]+/,
+if (languages.dot) {
+  Prism.languages.dot = {
+    ...Prism.languages.dot,
+    'comment': {
+      pattern: /(^|\s)\/\*[\s\S]*?\*\/|\/\/.*/,
+      lookbehind: true,
+    },
+    'graph-type': {
+      pattern: /\b(digraph|graph|subgraph|strict)\b/i,
+      alias: 'keyword',
+    },
+    'node-edge-graph-keyword': {
+      pattern: /\b(node|edge|graph)\b/,
+      alias: 'keyword'
+    },
+    'attribute-id': {
+      pattern: /[a-zA-Z_]\w*(?=\s*=)/,
+      alias: 'property',
+    },
+    'attribute-value': [
+      {
+        pattern: /"(?:\\.|[^"\\])*"/,
         alias: 'string',
       },
-      punctuation: /[\[\]=,;]/,
+      {
+        pattern: /<[^>]*>/, // HTML-like labels
+        alias: 'string',
+      },
+      {
+        pattern: /[-+]?\b\d+(?:\.\d+)?\b/,
+        alias: 'number',
+      },
+      {
+        pattern: /\b\w+\b/,
+        alias: 'string',
+      }
+    ],
+    'edge-op': {
+      pattern: /--|->/,
+      alias: 'operator',
     },
-  },
-  'edge-op': {
-    pattern: /--|->/,
-    alias: 'operator',
-  },
-  'node-id': {
-    pattern: /\b\w+\b/,
-    alias: 'class-name',
-  },
-  punctuation: /[{}[\];,]/,
-  keyword: /\b(strict)\b/i,
-};
+    'node-id': {
+      pattern: /(?!\b(digraph|graph|subgraph|strict|node|edge)\b)\b[a-zA-Z_]\w*\b/,
+      alias: 'class-name',
+    },
+    'punctuation': /[{}[\];,=]/,
+  };
+}
 
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -73,10 +87,11 @@ export function GraphEditor({ value, onChange }: GraphEditorProps) {
             bottom: 0;
             overflow-y: auto;
             background-color: hsl(var(--card));
+            color: #ccc;
           }
           .code-editor {
             font-family: 'Fira Code', monospace;
-            font-size: 13px;
+            font-size: 14px;
             line-height: 1.6;
             min-height: 100%;
           }
@@ -91,23 +106,56 @@ export function GraphEditor({ value, onChange }: GraphEditorProps) {
             text-align: right;
             color: hsl(var(--muted-foreground) / 0.5);
           }
-          .token.comment, .token.prolog, .token.doctype, .token.cdata {
-            color: hsl(var(--muted-foreground));
+          .token.comment, 
+          .token.prolog, 
+          .token.doctype, 
+          .token.cdata {
+            color: #6a9955;
           }
-          .token.property, .token.tag, .token.boolean, .token.number, .token.constant, .token.symbol, .token.deleted {
-            color: #905;
+          .token.punctuation {
+            color: #d4d4d4;
           }
+          .token.property, 
+          .token.tag, 
+          .token.boolean, 
+          .token.constant, 
+          .token.symbol,
+          .token.deleted {
+            color: #9cdcfe;
+          }
+          .token.number {
+            color: #b5cea8;
+          }
+          .token.selector, 
+          .token.attr-name, 
+          .token.char, 
+          .token.builtin, 
+          .token.inserted {
+            color: #ce9178;
+          }
+           .token.string {
+            color: #ce9178;
+          }
+          .token.operator, 
+          .token.entity, 
+          .token.url, 
+          .language-css .token.string, 
+          .style .token.string {
+            color: #d4d4d4;
+          }
+          .token.atrule, 
+          .token.attr-value, 
           .token.keyword {
-            color: #008080; 
+            color: #c586c0;
           }
-          .token.operator {
-            color: #ccff00;
-          }
-          .token.string {
-            color: #690;
-          }
+          .token.function,
           .token.class-name {
-            color: hsl(var(--primary-foreground));
+            color: #4ec9b0;
+          }
+          .token.regex,
+          .token.important, 
+          .token.variable {
+            color: #d16969;
           }
         `}</style>
         <div className="code-editor-wrapper">
