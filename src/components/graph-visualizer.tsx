@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { graphviz } from '@hpcc-js/wasm';
+import { Graphviz } from '@hpcc-js/wasm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -31,7 +31,7 @@ export function GraphVisualizer({ dot, onSvgChange }: GraphVisualizerProps) {
       setError('');
       try {
         // Ensure wasm is loaded. This can be slow on first load.
-        await graphviz.load();
+        const graphviz = await Graphviz.load();
         const svgString = await graphviz.layout(dot, 'svg', 'dot');
         setSvg(svgString);
         onSvgChange(svgString);
