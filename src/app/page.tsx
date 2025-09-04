@@ -86,7 +86,7 @@ function PageContent() {
           toast({
             variant: 'destructive',
             title: 'Invalid Share Link',
-            description: 'The provided link contains invalid graph data.',
+            description: 'The provided link contains invalid or corrupted graph data.',
           });
         }
       };
@@ -172,21 +172,22 @@ function PageContent() {
   };
   
   const handleShare = useCallback(async () => {
-    const encodedCode = await compressString(dotCode);
-    const url = `${window.location.origin}${window.location.pathname}?code=${encodedCode}`;
-    navigator.clipboard.writeText(url).then(() => {
+    try {
+      const encodedCode = await compressString(dotCode);
+      const url = `${window.location.origin}${window.location.pathname}?code=${encodedCode}`;
+      await navigator.clipboard.writeText(url);
       toast({
         title: 'Link Copied!',
         description: 'A shareable link has been copied to your clipboard.',
       });
-    }, (err) => {
+    } catch (err) {
       toast({
         variant: 'destructive',
         title: 'Failed to Copy',
         description: 'Could not copy the link to your clipboard.',
       });
       console.error('Failed to copy share link: ', err);
-    });
+    }
   }, [dotCode, toast]);
 
   const handleExportSVG = useCallback(() => {

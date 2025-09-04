@@ -75,6 +75,13 @@ export async function decompressString(input: string): Promise<string> {
   } catch (error) {
     console.error('Decompression failed:', error);
      // Fallback for non-compressed links
-    return atob(input);
+    try {
+      return atob(input);
+    } catch (atobError) {
+      console.error('Fallback atob decoding also failed:', atobError);
+      // If even atob fails, it might be a corrupted or non-encoded link.
+      // Return a default or error state that the app can handle.
+      throw new Error('Invalid code in URL');
+    }
   }
 }
