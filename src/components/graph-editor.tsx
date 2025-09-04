@@ -8,42 +8,41 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/themes/prism-tomorrow.css'; 
 
 // Custom DOT language definition for Prism
-if (typeof window !== 'undefined') {
-  (languages.dot = {
-    comment: {
-      pattern: /(^|\s)\/\*[\s\S]*?\*\/|\/\/.*/,
-      lookbehind: true,
-    },
-    'graph-type': {
-      pattern: /\b(digraph|graph|subgraph)\b/i,
-      alias: 'keyword',
-    },
-    'node-edge-attributes': {
-      pattern: /\b(node|edge|graph)\s*\[.*?\]/,
-      inside: {
-        'attribute-name': {
-          pattern: /\b\w+\b(?=\s*=)/,
-          alias: 'property',
-        },
-        'attribute-value': {
-          pattern: /"(?:\\.|[^"\\])*"|[\w.-]+/,
-          alias: 'string',
-        },
-        punctuation: /[\[\]=,;]/,
+languages.dot = {
+  comment: {
+    pattern: /(^|\s)\/\*[\s\S]*?\*\/|\/\/.*/,
+    lookbehind: true,
+  },
+  'graph-type': {
+    pattern: /\b(digraph|graph|subgraph)\b/i,
+    alias: 'keyword',
+  },
+  'node-edge-attributes': {
+    pattern: /\b(node|edge|graph)\s*\[.*?\]/,
+    inside: {
+      'attribute-name': {
+        pattern: /\b\w+\b(?=\s*=)/,
+        alias: 'property',
       },
+      'attribute-value': {
+        pattern: /"(?:\\.|[^"\\])*"|[\w.-]+/,
+        alias: 'string',
+      },
+      punctuation: /[\[\]=,;]/,
     },
-    'edge-op': {
-      pattern: /--|->/,
-      alias: 'operator',
-    },
-    'node-id': {
-      pattern: /\b\w+\b/,
-      alias: 'class-name',
-    },
-    punctuation: /[{}[\];,]/,
-    keyword: /\b(strict)\b/i,
-  });
-}
+  },
+  'edge-op': {
+    pattern: /--|->/,
+    alias: 'operator',
+  },
+  'node-id': {
+    pattern: /\b\w+\b/,
+    alias: 'class-name',
+  },
+  punctuation: /[{}[\];,]/,
+  keyword: /\b(strict)\b/i,
+};
+
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
