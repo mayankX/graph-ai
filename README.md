@@ -47,7 +47,7 @@ This project uses Firebase for its "Share" functionality. To connect to your Fir
     NEXT_PUBLIC_FIREBASE_APP_ID="your-app-id"
     ```
 
-**Important**: The `.env.local` file is included in `.gitignore` to ensure you do not accidentally commit your secret keys to source control.
+**Important**: The `.gitignore` file is configured to ignore `.env.local`, so you will not accidentally commit your secret keys to source control. If you have already committed this file, you can remove it from your repository's history by running `git rm --cached .env.local`.
 
 ### Running the Development Server
 
