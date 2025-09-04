@@ -12,6 +12,7 @@ import {z} from 'genkit';
 
 const AIPoweredGraphEnhancementInputSchema = z.object({
   dotCode: z.string().describe('The DOT code of the graph to be enhanced.'),
+  prompt: z.string().optional().describe('User-provided instructions for enhancement.'),
 });
 export type AIPoweredGraphEnhancementInput = z.infer<typeof AIPoweredGraphEnhancementInputSchema>;
 
@@ -31,12 +32,22 @@ const prompt = ai.definePrompt({
   name: 'aiPoweredGraphEnhancementPrompt',
   input: {schema: AIPoweredGraphEnhancementInputSchema},
   output: {schema: AIPoweredGraphEnhancementOutputSchema},
-  prompt: `You are an AI graph enhancement tool. Analyze the provided DOT code and suggest improvements to enhance the graph's readability and aesthetics.
+  prompt: `You are an AI graph enhancement tool. Your task is to modify the provided DOT code to improve its aesthetics based on user instructions, with a primary focus on colors and styles.
 
-  Consider improvements to the layout, node/edge styles, and color palettes to make the graph more visually appealing and easier to understand.
-  Provide the enhanced DOT code and a summary of the suggestions made.
+  **IMPORTANT RULE: Do NOT change the graph's structure or layout (e.g., node positions, connections, rankdir). Only modify attributes like colors, styles, and fonts.**
 
-  DOT Code:
+  Analyze the provided DOT code. If the user has provided specific instructions, prioritize them. If not, suggest and apply creative improvements to the color palette, node/edge styles (like 'filled', 'rounded'), and fonts to make the graph more visually appealing and easier to understand.
+
+  Always provide the complete, enhanced DOT code and a summary of the changes you made.
+
+  User Instructions:
+  {{#if prompt}}
+    {{prompt}}
+  {{else}}
+    No specific instructions provided. Focus on improving colors and styles.
+  {{/if}}
+
+  Original DOT Code:
   {{dotCode}}`,
 });
 

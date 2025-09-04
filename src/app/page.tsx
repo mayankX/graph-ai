@@ -4,8 +4,9 @@ import { useState, useRef, useCallback } from 'react';
 import { AppHeader } from '@/components/app-header';
 import { GraphEditor } from '@/components/graph-editor';
 import { GraphVisualizer } from '@/components/graph-visualizer';
-import { enhanceGraphAction } from '@/app/actions';
+import { enhanceGraphAction, enhancePromptAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,12 +59,14 @@ const defaultDotCode = `digraph G {
 
 export default function Home() {
   const [dotCode, setDotCode] = useState<string>(defaultDotCode);
+  const [previousDotCode, setPreviousDotCode] = useState<string | null>(null);
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [isEnhancingPrompt, setIsEnhancingPrompt] = useState(false);
   const [suggestions, setSuggestions] = useState<string>('');
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
   const svgContentRef = useRef<string>('');
   const { toast } = useToast();
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState('Use a vibrant and modern color palette.');
 
   const handleEnhance = useCallback(async () => {
     if (!dotCode.trim()) {
@@ -74,8 +77,10 @@ export default function Home() {
       });
       return;
     }
+    
+    setPreviousDotCode(dotCode);
     setIsEnhancing(true);
-    const result = await enhanceGraphAction({ dotCode });
+    const result = await enhanceGraphAction({ dotCode, prompt });
     setIsEnhancing(false);
 
     if (result.error) {
@@ -84,27 +89,62 @@ export default function Home() {
         title: 'AI Enhancement Failed',
         description: result.error,
       });
+      setPreviousDotCode(null);
     } else if (result.data) {
       setDotCode(result.data.enhancedDotCode);
       setSuggestions(result.data.suggestions);
-      setIsSuggestionOpen(true);
       toast({
         title: 'Graph Enhanced!',
-        description: 'AI suggestions have been applied to your graph.',
+        description: 'AI suggestions have been applied. You can undo this change.',
+        action: (
+          <Button variant="outline" size="sm" onClick={() => {
+            if (previousDotCode) {
+              setDotCode(previousDotCode);
+              setPreviousDotCode(null);
+              toast({ title: 'Undo Successful', description: 'The graph has been reverted.' });
+            }
+          }}>
+            Undo
+          </Button>
+        ),
       });
     }
-  }, [dotCode, toast]);
+  }, [dotCode, prompt, toast, previousDotCode]);
+
+  const handleEnhancePrompt = useCallback(async () => {
+    setIsEnhancingPrompt(true);
+    const result = await enhancePromptAction({ prompt });
+    setIsEnhancingPrompt(false);
+
+    if (result.error) {
+      toast({
+        variant: 'destructive',
+        title: 'Prompt Enhancement Failed',
+        description: result.error,
+      });
+    } else if (result.data) {
+      setPrompt(result.data.enhancedPrompt);
+      toast({
+        title: 'Prompt Enhanced!',
+        description: 'The AI has refined your instructions.',
+      });
+    }
+  }, [prompt, toast]);
 
   const downloadFile = (filename: string, content: string, mimeType: string) => {
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
+    const isDataUrl = content.startsWith('data:');
+    const url = isDataUrl ? content : URL.createObjectURL(new Blob([content], { type: mimeType }));
+    
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+
+    if (!isDataUrl) {
+      URL.revokeObjectURL(url);
+    }
   };
 
   const handleExportSVG = useCallback(() => {
@@ -130,8 +170,16 @@ export default function Home() {
       const canvas = document.createElement('canvas');
       
       const svgElement = new DOMParser().parseFromString(svgString, 'image/svg+xml').querySelector('svg');
-      const width = svgElement?.width.baseVal.value ?? 1024;
-      const height = svgElement?.height.baseVal.value ?? 768;
+      const widthAttr = svgElement?.getAttribute('width');
+      const heightAttr = svgElement?.getAttribute('height');
+      
+      // Use viewBox as a fallback for dimensions
+      const viewBox = svgElement?.getAttribute('viewBox')?.split(' ');
+      const vbWidth = viewBox ? parseFloat(viewBox[2]) : 1024;
+      const vbHeight = viewBox ? parseFloat(viewBox[3]) : 768;
+
+      const width = widthAttr ? parseFloat(widthAttr) : vbWidth;
+      const height = heightAttr ? parseFloat(heightAttr) : vbHeight;
 
       const scale = 2; // For higher resolution
       canvas.width = width * scale;
@@ -157,11 +205,15 @@ export default function Home() {
     <div className="flex flex-col h-screen bg-background">
       <AppHeader 
         onEnhance={handleEnhance}
+        onEnhancePrompt={handleEnhancePrompt}
         onExportSVG={handleExportSVG}
         onExportPNG={handleExportPNG}
         isEnhancing={isEnhancing}
+        isEnhancingPrompt={isEnhancingPrompt}
         prompt={prompt}
         setPrompt={setPrompt}
+        onShowSuggestions={() => setSuggestions && setIsSuggestionOpen(true)}
+        hasSuggestions={!!suggestions}
       />
       <main className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 p-4 overflow-hidden">
         <GraphEditor value={dotCode} onChange={setDotCode} />
