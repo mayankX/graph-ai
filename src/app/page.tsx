@@ -18,7 +18,7 @@ import {
 
 const defaultDotCode = `digraph G {
   bgcolor="transparent";
-  node [fontname="Inter", style="filled", fillcolor="#3a3a3a", fontcolor="#f0f0f0", color="#008080", shape="box", rounded=true];
+  node [fontname="Inter", style="filled", fillcolor="#3a3a3a", fontcolor="#f0f0f0", color="#008080", shape=box, rounded=true];
   edge [fontname="Inter", color="#008080", fontcolor="#f0f0f0"];
 
   subgraph cluster_0 {
@@ -63,6 +63,7 @@ export default function Home() {
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
   const svgContentRef = useRef<string>('');
   const { toast } = useToast();
+  const [prompt, setPrompt] = useState('');
 
   const handleEnhance = useCallback(async () => {
     if (!dotCode.trim()) {
@@ -159,6 +160,8 @@ export default function Home() {
         onExportSVG={handleExportSVG}
         onExportPNG={handleExportPNG}
         isEnhancing={isEnhancing}
+        prompt={prompt}
+        setPrompt={setPrompt}
       />
       <main className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 p-4 overflow-hidden">
         <GraphEditor value={dotCode} onChange={setDotCode} />
