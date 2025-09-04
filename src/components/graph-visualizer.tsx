@@ -104,9 +104,9 @@ export function GraphVisualizer({ dot, onSvgChange }: GraphVisualizerProps) {
                  <Button variant="outline" size="icon" onClick={() => zoomOut()}><ZoomOut size={16}/></Button>
                  <Button variant="outline" size="icon" onClick={() => resetTransform()}><RotateCcw size={16}/></Button>
               </div>
-              <TransformComponent wrapperClass='w-full h-full' contentClass='w-full h-full'>
+              <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
                 <div
-                  className="w-full h-full [&>svg]:w-full [&>svg]:h-full [&>svg]:object-contain transition-opacity duration-300 animate-in fade-in"
+                  className="w-full h-full flex items-center justify-center [&>svg]:max-w-full [&>svg]:max-h-full transition-opacity duration-300 animate-in fade-in"
                   dangerouslySetInnerHTML={{ __html: output }}
                 />
               </TransformComponent>
