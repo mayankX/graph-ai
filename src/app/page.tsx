@@ -91,6 +91,7 @@ export default function Home() {
       });
       setPreviousDotCode(null);
     } else if (result.data) {
+      const originalCode = dotCode;
       setDotCode(result.data.enhancedDotCode);
       setSuggestions(result.data.suggestions);
       toast({
@@ -98,18 +99,15 @@ export default function Home() {
         description: 'AI suggestions have been applied. You can undo this change.',
         action: (
           <Button variant="outline" size="sm" onClick={() => {
-            if (previousDotCode) {
-              setDotCode(previousDotCode);
-              setPreviousDotCode(null);
-              toast({ title: 'Undo Successful', description: 'The graph has been reverted.' });
-            }
+            setDotCode(originalCode);
+            toast({ title: 'Undo Successful', description: 'The graph has been reverted.' });
           }}>
             Undo
           </Button>
         ),
       });
     }
-  }, [dotCode, prompt, toast, previousDotCode]);
+  }, [dotCode, prompt, toast]);
 
   const handleEnhancePrompt = useCallback(async () => {
     setIsEnhancingPrompt(true);
