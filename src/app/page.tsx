@@ -250,7 +250,7 @@ function PageContent() {
         onShowSuggestions={() => setSuggestions && setIsSuggestionOpen(true)}
         hasSuggestions={!!suggestions}
       />
-      <main className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 p-4 overflow-hidden">
+      <main className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 p-4 overflow-hidden md:grid-rows-1 grid-rows-[minmax(200px,35%),1fr]">
         <GraphEditor value={dotCode} onChange={setDotCode} />
         <GraphVisualizer 
           dot={dotCode} 
