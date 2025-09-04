@@ -2,14 +2,14 @@
 
 import React from 'react';
 import Editor from 'react-simple-code-editor';
-import { highlight, languages, Prism } from 'prismjs';
+import { highlight, languages } from 'prismjs';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/themes/prism-tomorrow.css'; 
 
 // Custom DOT language definition for Prism
-if (!languages.dot) {
-  Prism.languages.dot = {
+if (languages && !languages.dot) {
+  languages.dot = {
     'comment': {
       pattern: /(^|\s)\/\*[\s\S]*?\*\/|\/\/.*/,
       lookbehind: true,
