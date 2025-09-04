@@ -5,7 +5,7 @@ import React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AppHeader } from '@/components/app-header';
 import { GraphEditor } from '@/components/graph-editor';
-import { GraphVisualizer } from '@/components/graph-visualizer';
+import { GraphVisualizer, type RenderFormat } from '@/components/graph-visualizer';
 import { enhanceGraphAction, enhancePromptAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
