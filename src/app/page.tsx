@@ -5,10 +5,9 @@ import React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AppHeader } from '@/components/app-header';
 import { GraphEditor } from '@/components/graph-editor';
-import { GraphVisualizer, type RenderFormat } from '@/components/graph-visualizer';
-import { enhanceGraphAction, enhancePromptAction } from '@/app/actions';
+import { GraphVisualizer } from '@/components/graph-visualizer';
+import { enhanceGraphAction, enhancePromptAction, saveGraphAction, getGraphAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,7 +17,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { compressString, decompressString } from '@/lib/utils';
 
 const defaultDotCode = `digraph G {
   bgcolor="transparent";
@@ -74,22 +72,22 @@ function PageContent() {
   
   useEffect(() => {
     setIsMounted(true);
-    const codeFromUrl = searchParams.get('code');
-    if (codeFromUrl) {
-      const decodeAndSetCode = async () => {
-        try {
-          const decodedCode = await decompressString(codeFromUrl);
-          setDotCode(decodedCode);
-        } catch (error) {
-          console.error("Failed to decode DOT code from URL:", error);
+    const graphId = searchParams.get('g');
+    if (graphId) {
+      const loadGraph = async () => {
+        const { data, error } = await getGraphAction(graphId);
+        if (error) {
+          console.error("Failed to load graph from DB:", error);
           toast({
             variant: 'destructive',
             title: 'Invalid Share Link',
-            description: 'The provided link contains invalid or corrupted graph data.',
+            description: error,
           });
+        } else if (data) {
+          setDotCode(data);
         }
       };
-      decodeAndSetCode();
+      loadGraph();
     }
   }, [searchParams, toast]);
 
@@ -161,8 +159,10 @@ function PageContent() {
   
   const handleShare = useCallback(async () => {
     try {
-      const encodedCode = await compressString(dotCode);
-      const url = `${window.location.origin}${window.location.pathname}?code=${encodedCode}`;
+      const { data: graphId, error } = await saveGraphAction(dotCode);
+      if (error) throw new Error(error);
+
+      const url = `${window.location.origin}${window.location.pathname}?g=${graphId}`;
       await navigator.clipboard.writeText(url);
       toast({
         title: 'Link Copied!',
