@@ -36,7 +36,7 @@ Make sure you have Node.js and npm installed.
 This project uses Firebase for its "Share" functionality. To connect to your Firebase project, you will need to create a local environment file.
 
 1.  Create a file named `.env.local` in the root of your project.
-2.  Add your Firebase configuration to this file. It should look something like this:
+2.  Add your Firebase configuration to this file. You can get these values from your Firebase project's settings. It should look something like this:
 
     ```
     NEXT_PUBLIC_FIREBASE_API_KEY="your-api-key"
