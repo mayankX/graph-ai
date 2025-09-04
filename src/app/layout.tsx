@@ -1,6 +1,7 @@
 import type {Metadata} from 'next';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
+import React from 'react';
 
 export const metadata: Metadata = {
   title: 'GraphAI',
@@ -20,7 +21,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        {children}
+        <React.Suspense fallback={<div>Loading...</div>}>
+          {children}
+        </React.Suspense>
         <Toaster />
       </body>
     </html>

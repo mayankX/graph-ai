@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { AppHeader } from '@/components/app-header';
 import { GraphEditor } from '@/components/graph-editor';
 import { GraphVisualizer } from '@/components/graph-visualizer';
@@ -57,7 +58,8 @@ const defaultDotCode = `digraph G {
   b3 -> end;
 }`;
 
-export default function Home() {
+function PageContent() {
+  const searchParams = useSearchParams();
   const [dotCode, setDotCode] = useState<string>(defaultDotCode);
   const [previousDotCode, setPreviousDotCode] = useState<string | null>(null);
   const [isEnhancing, setIsEnhancing] = useState(false);
@@ -67,6 +69,25 @@ export default function Home() {
   const svgContentRef = useRef<string>('');
   const { toast } = useToast();
   const [prompt, setPrompt] = useState('Use a vibrant and modern color palette.');
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+    const codeFromUrl = searchParams.get('code');
+    if (codeFromUrl) {
+      try {
+        const decodedCode = atob(codeFromUrl);
+        setDotCode(decodedCode);
+      } catch (error) {
+        console.error("Failed to decode DOT code from URL:", error);
+        toast({
+          variant: 'destructive',
+          title: 'Invalid Share Link',
+          description: 'The provided link contains invalid graph data.',
+        });
+      }
+    }
+  }, [searchParams, toast]);
 
   const handleEnhance = useCallback(async () => {
     if (!dotCode.trim()) {
@@ -144,6 +165,24 @@ export default function Home() {
       URL.revokeObjectURL(url);
     }
   };
+  
+  const handleShare = useCallback(() => {
+    const encodedCode = btoa(dotCode);
+    const url = `${window.location.origin}${window.location.pathname}?code=${encodedCode}`;
+    navigator.clipboard.writeText(url).then(() => {
+      toast({
+        title: 'Link Copied!',
+        description: 'A shareable link has been copied to your clipboard.',
+      });
+    }, (err) => {
+      toast({
+        variant: 'destructive',
+        title: 'Failed to Copy',
+        description: 'Could not copy the link to your clipboard.',
+      });
+      console.error('Failed to copy share link: ', err);
+    });
+  }, [dotCode, toast]);
 
   const handleExportSVG = useCallback(() => {
     if (!svgContentRef.current) {
@@ -171,7 +210,6 @@ export default function Home() {
       const widthAttr = svgElement?.getAttribute('width');
       const heightAttr = svgElement?.getAttribute('height');
       
-      // Use viewBox as a fallback for dimensions
       const viewBox = svgElement?.getAttribute('viewBox')?.split(' ');
       const vbWidth = viewBox ? parseFloat(viewBox[2]) : 1024;
       const vbHeight = viewBox ? parseFloat(viewBox[3]) : 768;
@@ -179,7 +217,7 @@ export default function Home() {
       const width = widthAttr ? parseFloat(widthAttr) : vbWidth;
       const height = heightAttr ? parseFloat(heightAttr) : vbHeight;
 
-      const scale = 2; // For higher resolution
+      const scale = 2; 
       canvas.width = width * scale;
       canvas.height = height * scale;
 
@@ -198,6 +236,10 @@ export default function Home() {
     }
     img.src = url;
   }, [toast]);
+  
+  if (!isMounted) {
+    return null; 
+  }
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -206,6 +248,7 @@ export default function Home() {
         onEnhancePrompt={handleEnhancePrompt}
         onExportSVG={handleExportSVG}
         onExportPNG={handleExportPNG}
+        onShare={handleShare}
         isEnhancing={isEnhancing}
         isEnhancingPrompt={isEnhancingPrompt}
         prompt={prompt}
@@ -236,5 +279,14 @@ export default function Home() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+  );
+}
+
+
+export default function Home() {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <PageContent />
+    </React.Suspense>
   );
 }

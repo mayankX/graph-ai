@@ -1,6 +1,6 @@
 'use client';
 
-import { GitGraph, Sparkles, Download, Loader, ChevronDown, Wand2, Info } from 'lucide-react';
+import { GitGraph, Sparkles, Download, Loader, ChevronDown, Wand2, Info, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -17,6 +17,7 @@ type AppHeaderProps = {
   onEnhancePrompt: () => void;
   onExportSVG: () => void;
   onExportPNG: () => void;
+  onShare: () => void;
   isEnhancing: boolean;
   isEnhancingPrompt: boolean;
   prompt: string;
@@ -29,7 +30,8 @@ export function AppHeader({
   onEnhance, 
   onEnhancePrompt,
   onExportSVG, 
-  onExportPNG, 
+  onExportPNG,
+  onShare, 
   isEnhancing,
   isEnhancingPrompt,
   prompt, 
@@ -92,6 +94,11 @@ export function AppHeader({
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Button variant="outline" onClick={onShare}>
+          <Share2 className="mr-2 h-4 w-4" />
+          Share
+        </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
