@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/select"
 import { Button } from './ui/button';
 
-export type RenderFormat = 'svg' | 'png-image-element' | 'jpeg-image-element' | 'xdot' | 'plain';
-const RENDER_FORMATS: RenderFormat[] = ['svg', 'png-image-element', 'jpeg-image-element', 'xdot', 'plain'];
+export type RenderFormat = 'svg' | 'png' | 'jpg' | 'xdot' | 'plain';
+const RENDER_FORMATS: RenderFormat[] = ['svg', 'png', 'jpg', 'xdot', 'plain'];
 
 type GraphVisualizerProps = {
   dot: string;
@@ -49,8 +49,8 @@ export function GraphVisualizer({ dot, onSvgChange }: GraphVisualizerProps) {
           const svgString = await graphviz.layout(dot, 'svg', 'dot');
           setOutput(svgString);
           onSvgChange(svgString);
-        } else if (format === 'png-image-element' || format === 'jpeg-image-element') {
-           const imageElement = await graphviz.layout(dot, format, 'dot');
+        } else if (format === 'png' || format === 'jpg') {
+           const imageElement = await graphviz.layout(dot, `${format}-image-element` as any, 'dot');
            setOutput(imageElement);
            // Note: onSvgChange is not called for images.
            onSvgChange('');
