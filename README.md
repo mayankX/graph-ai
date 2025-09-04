@@ -2,13 +2,19 @@
 
 GraphAI is an AI-powered Graphviz editor that allows you to render DOT code and intelligently refine graph aesthetics using generative AI. You can describe the visual changes you want in plain English, and the AI will enhance the graph's styles, colors, and fonts for you.
 
+![GraphAI Screenshot](https://placehold.co/1200x600?text=GraphAI%20Application%20Screenshot)
+
 ## Features
 
-- **Real-time DOT Editor**: Write DOT code and see the rendered graph update instantly.
-- **AI-Powered Styling**: Use natural language to describe how you want your graph to look. The AI will modify the DOT code to apply colors, fonts, and styles.
-- **Export Options**: Export your graph as an SVG or PNG.
-- **Shareable Links**: Save your graph and share it with others via a short, unique link.
-- **Client-Side Rendering**: Fast and efficient rendering directly in the browser using `@hpcc-js/wasm`.
+- **Real-time DOT Editor**: Write DOT code and see the rendered graph update instantly in a side-by-side view. Our editor provides syntax highlighting to make your code easy to read and edit.
+
+- **AI-Powered Styling**: Use natural language to describe how you want your graph to look. The AI will modify the DOT code to apply colors, fonts, and styles, turning a simple description into a beautiful visualization.
+
+- **Export Options**: Export your graph as an SVG or PNG to use in your presentations, documents, or websites.
+
+- **Shareable Links**: Save your graph and share it with others via a short, unique link. This makes collaboration and sharing your work effortless.
+
+- **Client-Side Rendering**: Fast and efficient rendering directly in the browser using `@hpcc-js/wasm`, so your graphs render in a snap.
 
 ## Getting Started
 
