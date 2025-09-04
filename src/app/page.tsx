@@ -63,7 +63,6 @@ const defaultDotCode = `digraph G {
 function PageContent() {
   const searchParams = useSearchParams();
   const [dotCode, setDotCode] = useState<string>(defaultDotCode);
-  const [previousDotCode, setPreviousDotCode] = useState<string | null>(null);
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [isEnhancingPrompt, setIsEnhancingPrompt] = useState(false);
   const [suggestions, setSuggestions] = useState<string>('');
@@ -104,7 +103,6 @@ function PageContent() {
       return;
     }
     
-    setPreviousDotCode(dotCode);
     setIsEnhancing(true);
     const result = await enhanceGraphAction({ dotCode, prompt });
     setIsEnhancing(false);
@@ -115,22 +113,12 @@ function PageContent() {
         title: 'AI Enhancement Failed',
         description: result.error,
       });
-      setPreviousDotCode(null);
     } else if (result.data) {
-      const originalCode = dotCode;
       setDotCode(result.data.enhancedDotCode);
       setSuggestions(result.data.suggestions);
       toast({
         title: 'Graph Enhanced!',
-        description: 'AI suggestions have been applied. You can undo this change.',
-        action: (
-          <Button variant="outline" size="sm" onClick={() => {
-            setDotCode(originalCode);
-            toast({ title: 'Undo Successful', description: 'The graph has been reverted.' });
-          }}>
-            Undo
-          </Button>
-        ),
+        description: 'AI suggestions have been applied.',
       });
     }
   }, [dotCode, prompt, toast]);
