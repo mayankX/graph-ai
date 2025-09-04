@@ -21,7 +21,7 @@ export function GraphEditor({ value, onChange }: GraphEditorProps) {
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Enter DOT code here..."
-            className="h-full w-full resize-none bg-background md:bg-card font-code text-[13px] leading-relaxed rounded-none border-0 border-t border-border/80 focus-visible:ring-0 focus-visible:ring-offset-0 p-4"
+            className="h-full min-h-full w-full resize-none bg-background md:bg-card font-code text-[13px] leading-relaxed rounded-none border-0 border-t border-border/80 focus-visible:ring-0 focus-visible:ring-offset-0 p-4"
           />
         </ScrollArea>
       </CardContent>
