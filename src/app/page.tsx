@@ -18,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { compressString, decompressString } from '@/lib/utils';
 
 const defaultDotCode = `digraph G {
   bgcolor="transparent";
@@ -76,17 +77,20 @@ function PageContent() {
     setIsMounted(true);
     const codeFromUrl = searchParams.get('code');
     if (codeFromUrl) {
-      try {
-        const decodedCode = atob(codeFromUrl);
-        setDotCode(decodedCode);
-      } catch (error) {
-        console.error("Failed to decode DOT code from URL:", error);
-        toast({
-          variant: 'destructive',
-          title: 'Invalid Share Link',
-          description: 'The provided link contains invalid graph data.',
-        });
-      }
+      const decodeAndSetCode = async () => {
+        try {
+          const decodedCode = await decompressString(codeFromUrl);
+          setDotCode(decodedCode);
+        } catch (error) {
+          console.error("Failed to decode DOT code from URL:", error);
+          toast({
+            variant: 'destructive',
+            title: 'Invalid Share Link',
+            description: 'The provided link contains invalid graph data.',
+          });
+        }
+      };
+      decodeAndSetCode();
     }
   }, [searchParams, toast]);
 
@@ -167,8 +171,8 @@ function PageContent() {
     }
   };
   
-  const handleShare = useCallback(() => {
-    const encodedCode = btoa(dotCode);
+  const handleShare = useCallback(async () => {
+    const encodedCode = await compressString(dotCode);
     const url = `${window.location.origin}${window.location.pathname}?code=${encodedCode}`;
     navigator.clipboard.writeText(url).then(() => {
       toast({
