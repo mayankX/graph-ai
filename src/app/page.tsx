@@ -19,7 +19,7 @@ import {
 
 const defaultDotCode = `digraph G {
   bgcolor="transparent";
-  node [fontname="Inter", style="filled", fillcolor="#3a3a3a", fontcolor="#f0f0f0", color="#008080", shape=box, rounded=true];
+  node [fontname="Inter", style="filled,rounded", fillcolor="#3a3a3a", fontcolor="#f0f0f0", color="#008080", shape=box];
   edge [fontname="Inter", color="#008080", fontcolor="#f0f0f0"];
 
   subgraph cluster_0 {
