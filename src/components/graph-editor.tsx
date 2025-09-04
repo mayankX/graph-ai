@@ -1,11 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import Editor from 'react-simple-code-editor';
 import { highlight, languages } from 'prismjs';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
-import 'prismjs/themes/prism-tomorrow.css'; 
+import 'prismjs/themes/prism-tomorrow.css';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from './ui/button';
+import { Clipboard } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 // Custom DOT language definition for Prism
 if (languages && !languages.dot) {
@@ -56,25 +60,52 @@ if (languages && !languages.dot) {
   };
 }
 
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
 type GraphEditorProps = {
   value: string;
   onChange: (value: string) => void;
 };
 
 export function GraphEditor({ value, onChange }: GraphEditorProps) {
+  const { toast } = useToast();
+
+  const handleCopy = useCallback(() => {
+    if (!value) {
+      toast({
+        variant: 'destructive',
+        title: 'Nothing to Copy',
+        description: 'The editor is empty.',
+      });
+      return;
+    }
+    navigator.clipboard.writeText(value).then(() => {
+      toast({
+        title: 'Copied to Clipboard',
+        description: 'The DOT code has been copied.',
+      });
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+      toast({
+        variant: 'destructive',
+        title: 'Copy Failed',
+        description: 'Could not copy the code to your clipboard.',
+      });
+    });
+  }, [value, toast]);
+
   const highlightCode = (code: string) =>
-    highlight(code, languages.dot, 'dot')
+    highlight(code, languages.dot || languages.clike, 'dot')
       .split('\n')
       .map((line, i) => `<span class='editor-line-number'>${i + 1}</span>${line}`)
       .join('\n');
 
   return (
     <Card className="h-full flex flex-col border-none md:border rounded-lg overflow-hidden">
-      <CardHeader className='py-4 px-6 flex-shrink-0'>
+      <CardHeader className='py-4 px-6 flex-row items-center justify-between'>
         <CardTitle className="text-lg">DOT Code Editor</CardTitle>
+        <Button variant="ghost" size="icon" onClick={handleCopy} className="h-8 w-8">
+            <Clipboard className="h-4 w-4" />
+            <span className="sr-only">Copy DOT code</span>
+        </Button>
       </CardHeader>
       <CardContent className="flex-grow p-0 relative">
         <style jsx global>{`
