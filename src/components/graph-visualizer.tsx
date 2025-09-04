@@ -96,23 +96,25 @@ export function GraphVisualizer({ dot, onSvgChange }: GraphVisualizerProps) {
     }
     if (typeof output === 'string' && format === 'svg') {
       return (
-        <TransformWrapper>
-          {({ zoomIn, zoomOut, resetTransform }) => (
-            <>
-              <div className="absolute top-2 right-2 z-10 flex gap-1">
-                 <Button variant="outline" size="icon" onClick={() => zoomIn()}><ZoomIn size={16}/></Button>
-                 <Button variant="outline" size="icon" onClick={() => zoomOut()}><ZoomOut size={16}/></Button>
-                 <Button variant="outline" size="icon" onClick={() => resetTransform()}><RotateCcw size={16}/></Button>
-              </div>
-              <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
-                <div
-                  className="w-full h-full flex items-center justify-center [&>svg]:max-w-full [&>svg]:max-h-full transition-opacity duration-300 animate-in fade-in"
-                  dangerouslySetInnerHTML={{ __html: output }}
-                />
-              </TransformComponent>
-            </>
-          )}
-        </TransformWrapper>
+        <div className="relative w-full h-full">
+          <TransformWrapper>
+            {({ zoomIn, zoomOut, resetTransform }) => (
+              <>
+                <div className="absolute top-2 right-2 z-10 flex gap-1">
+                  <Button variant="outline" size="icon" onClick={() => zoomIn()}><ZoomIn size={16}/></Button>
+                  <Button variant="outline" size="icon" onClick={() => zoomOut()}><ZoomOut size={16}/></Button>
+                  <Button variant="outline" size="icon" onClick={() => resetTransform()}><RotateCcw size={16}/></Button>
+                </div>
+                <TransformComponent wrapperClass="!w-full !h-full" contentClass="!w-full !h-full">
+                  <div
+                    className="w-full h-full flex items-center justify-center [&>svg]:max-w-full [&>svg]:max-h-full transition-opacity duration-300 animate-in fade-in"
+                    dangerouslySetInnerHTML={{ __html: output }}
+                  />
+                </TransformComponent>
+              </>
+            )}
+          </TransformWrapper>
+        </div>
       );
     }
     if(typeof output === 'string') {
