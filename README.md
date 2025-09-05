@@ -28,8 +28,8 @@ Make sure you have Node.js and npm installed.
 
 1.  Clone the repository:
     ```bash
-    git clone <your-repo-url>
-    cd graphai
+    git clone https://github.com/mayankX/graph-ai.git
+    cd graph-ai
     ```
 
 2.  Install the dependencies:
